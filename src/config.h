@@ -96,6 +96,18 @@
 
     #define LOG_TX		    37
 	#define LOG_RX		    36
+
+	#define SERIAL_KLINE_TX	16
+	#define SERIAL_KLINE_RX	15
 #endif  
+
+// Debug print levels
+enum DebugLevel : uint8_t {
+	DEBUG_INFO = 0,
+	DEBUG_VERBOSE_INFO,
+	DEBUG_WARNING,
+	DEBUG_ERROR,
+	DEBUG_MAX = 255
+};
 
 #endif // CONFIG_H
