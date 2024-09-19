@@ -9,8 +9,9 @@
 constexpr size_t requestSize = 5;
 uint8_t dmeRequest[requestSize] = {0x12, 0x05, 0x0B, 0x03, 0x1F};
 uint8_t readData[255] = {0};
-constexpr uint8_t mss54hpResponseDataStartOffset = requestSize + 3;
-constexpr uint8_t mss54hpTpsOffset = mss54hpResponseDataStartOffset + 27;
+constexpr uint8_t responseBytesBeforeData = 3;
+constexpr uint8_t mss54hpResponseDataStartOffset = requestSize + responseBytesBeforeData;
+constexpr uint8_t mss54hpTpsOffset = mss54hpResponseDataStartOffset + 23;
 constexpr float mss54hpTpsMultiplier = 0.1;
 DS2 ds2(Serial2);
 
@@ -20,10 +21,10 @@ void debugPrint(DebugLevel debugLevel, const char* formatStr, ...) {
 
 	char buffer[256];
 	va_list args;
-    va_start(args, formatStr);
+	va_start(args, formatStr);
 	vsnprintf(buffer, 256, formatStr, args);
 	Serial.print(buffer);
-    va_end(args);
+	va_end(args);
 }
 
 void setup() {
@@ -70,8 +71,10 @@ void loop() {
 		debugPrint(DEBUG_VERBOSE_INFO,"%s", "Received valid data\n");
 
 		// Extract TPS value from valid DME response and print to console.
-		int16_t tpsValue = (readData[mss54hpTpsOffset]) << 8 | readData[mss54hpTpsOffset - 1];
-		debugPrint(DEBUG_INFO, "TPS: %.1f%%\n", tpsValue * mss54hpTpsMultiplier);
+		int16_t throttlePedalValue =
+				((readData[mss54hpTpsOffset] & 0xFF) << 8) |
+				(readData[mss54hpTpsOffset + 1] & 0xFF);
+		debugPrint(DEBUG_INFO, "TPS: %.1f%%\n", throttlePedalValue * mss54hpTpsMultiplier);
 	} else if (receiveStatus == RECEIVE_TIMEOUT) {
 		debugPrint(DEBUG_INFO,"%s", "Timed out waiting for receiveData()\n");
 	} else if (receiveStatus == RECEIVE_BAD) {

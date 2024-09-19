@@ -3,7 +3,7 @@
 #include "config.h"
 
 #if PCB_VER >= 50
-HWCDC Serial;
+HWCDC SerialCDC;
 #endif
 
 #define UPDATE_FILE "/update.bin"   // Default file on SD card to update from
@@ -16,18 +16,18 @@ void updateFirmware() {
 	}
 	size_t updateSize = updateFile.size();
 
-	Serial.println("Firmware update started. Please wait, may take several minutes!");
+	SerialCDC.println("Firmware update started. Please wait, may take several minutes!");
 
 	if(Update.begin(updateSize)) {
 		if(Update.writeStream(updateFile) == updateSize) {
 			if(Update.end() && Update.isFinished()) {
 				updateFile.close();
 				SD_USE.remove(UPDATE_FILE);
-				Serial.println("Update sucessful");
+				SerialCDC.println("Update sucessful");
 				delay(3000);
 				ESP.restart();
 			} else {
-				Serial.println("Wrong file--");
+				SerialCDC.println("Wrong file--");
 				SD_USE.remove(UPDATE_FILE);
 			}
 		}
@@ -36,7 +36,7 @@ void updateFirmware() {
 
 
 void setup() {
-	Serial.begin(115200);
+	SerialCDC.begin(115200);
 
 	// Setup SD card
 	bool sdReady = false;
@@ -55,9 +55,9 @@ void setup() {
 
 	// Update firmware if file found
 	if(sdReady) updateFirmware();
-	else Serial.println("SD ERROR!");
+	else SerialCDC.println("SD ERROR!");
 
-	Serial.println("UPDATE ERROR!");
+	SerialCDC.println("UPDATE ERROR!");
 
 	delay(20000);
 	ESP.restart();
