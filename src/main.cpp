@@ -74,7 +74,7 @@ void loop() {
 		int16_t throttlePedalValue =
 				((readData[mss54hpTpsOffset] & 0xFF) << 8) |
 				(readData[mss54hpTpsOffset + 1] & 0xFF);
-		debugPrint(DEBUG_INFO, "TPS: %.1f%%\n", throttlePedalValue * mss54hpTpsMultiplier);
+		debugPrint(DEBUG_INFO, "Throttle Pedal: %.1f%%\n", throttlePedalValue * mss54hpTpsMultiplier);
 	} else if (receiveStatus == RECEIVE_TIMEOUT) {
 		debugPrint(DEBUG_INFO,"%s", "Timed out waiting for receiveData()\n");
 	} else if (receiveStatus == RECEIVE_BAD) {
